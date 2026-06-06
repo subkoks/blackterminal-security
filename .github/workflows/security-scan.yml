@@ -1,0 +1,36 @@
+name: security-scan
+
+# Safe trigger: `pull_request` runs in the fork's context WITHOUT repo secrets.
+# We intentionally do NOT use `pull_request_target` (which would run trusted
+# with secrets against untrusted PR code — a classic CI compromise vector).
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Least privilege: the scan only needs to read the checked-out code.
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      # Pinned to a commit SHA (mutable tags are a supply-chain risk — the
+      # exact class this skill teaches you to avoid). SHA == actions/checkout v4.2.2.
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Offline pattern scan
+        run: |
+          chmod +x scripts/scan.sh
+          ./scripts/scan.sh .
+
+      # Optional deeper passes — uncomment and pin to a SHA before enabling.
+      # - name: gitleaks (secret scan)
+      #   uses: gitleaks/gitleaks-action@<pin-to-commit-sha>
+      # - name: semgrep (OWASP)
+      #   run: |
+      #     pip install semgrep
+      #     semgrep --config p/owasp-top-ten --config p/secrets --error .

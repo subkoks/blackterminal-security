@@ -1,0 +1,22 @@
+{
+  "name": "blackterminal-security",
+  "version": "1.0.0",
+  "description": "Senior security engineer instincts for AI coding agents. Find vulnerabilities. Ship secure.",
+  "author": "black.terminal",
+  "homepage": "https://github.com/subkoks/blackterminal-security",
+  "license": "MIT",
+  "category": "security",
+  "tags": [
+    "security",
+    "vulnerability-detection",
+    "owasp",
+    "cwe",
+    "code-review",
+    "vibe-coding",
+    "skill",
+    "secrets-detection",
+    "appsec"
+  ],
+  "skills": ["./skills/blackterminal-security", "./skills/security-audit"],
+  "agents": ["./agents/security-auditor.md"]
+}

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# pre-commit — block commits that introduce common vulnerability patterns.
+# Installed by `./install.sh --with-hooks`. Scans staged files via scripts/scan.sh.
+# Bypass a single commit with:  git commit --no-verify
+
+set -euo pipefail
+
+REPO="$(git rev-parse --show-toplevel)"
+SCAN="$REPO/scripts/scan.sh"
+
+[ -x "$SCAN" ] || { echo "pre-commit: $SCAN not found/executable — skipping"; exit 0; }
+
+# Staged, added/copied/modified files only.
+STAGED=$(git diff --cached --name-only --diff-filter=ACM)
+[ -z "$STAGED" ] && exit 0
+
+rc=0
+while IFS= read -r f; do
+  [ -z "$f" ] && continue
+  [ -f "$REPO/$f" ] || continue
+  if ! "$SCAN" "$REPO/$f"; then
+    rc=1
+  fi
+done <<EOF
+$STAGED
+EOF
+
+if [ "$rc" -ne 0 ]; then
+  echo ""
+  echo "pre-commit: security findings above. Fix, or bypass with: git commit --no-verify"
+fi
+exit "$rc"
