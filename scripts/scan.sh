@@ -78,6 +78,19 @@ else
   while IFS= read -r _line; do
     FILES+=("$_line")
   done < <(find "${FIND_EXPR[@]}" 2>/dev/null)
+  # Exclude this scanner's own source: scan.sh contains the very patterns it
+  # greps for, so scanning itself yields false positives. Match by resolved
+  # path so only the running script is skipped — every other file (in this or
+  # any repo) is still inspected. Only applied to directory walks; an explicit
+  # `scan.sh scan.sh` still scans the file.
+  SELF_PATH="$(cd "$(dirname "$0")" 2>/dev/null && pwd)/$(basename "$0")"
+  _kept=()
+  for _f in "${FILES[@]+"${FILES[@]}"}"; do
+    _abs="$(cd "$(dirname "$_f")" 2>/dev/null && pwd)/$(basename "$_f")"
+    [ "$_abs" = "$SELF_PATH" ] && continue
+    _kept+=("$_f")
+  done
+  FILES=(${_kept[@]+"${_kept[@]}"})
 fi
 
 echo "BlackTerminal Security quick-scan"
