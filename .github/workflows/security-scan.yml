@@ -18,9 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Pinned to a commit SHA (mutable tags are a supply-chain risk — the
-      # exact class this skill teaches you to avoid). SHA == actions/checkout v4.2.2.
+      # exact class this skill teaches you to avoid). SHA == actions/checkout v5.0.0
+      # (Node 24; v4/Node 20 is being retired from GitHub-hosted runners).
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
 
       - name: Offline pattern scan
         run: |
