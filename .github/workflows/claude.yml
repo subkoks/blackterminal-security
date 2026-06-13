@@ -58,7 +58,7 @@ jobs:
             Post inline comments on specific lines where issues exist.
             If the PR looks clean, leave a short approving summary comment.
           claude_args: |
-            --max-turns 10
+            --max-turns 30
           plugin_marketplaces: |
             https://github.com/anthropics/claude-plugins-official.git
           plugins: |
