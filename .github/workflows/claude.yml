@@ -49,7 +49,7 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           # Prompt sent automatically on every PR — no @claude mention needed
-          direct_prompt: |
+          prompt: |
             Review this pull request. Check for:
             - Bugs, logic errors, or broken functionality
             - Security issues (secrets, injections, unsafe inputs)
