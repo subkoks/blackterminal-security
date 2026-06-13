@@ -2,6 +2,13 @@
 
 All notable changes to BlackTerminal Security.
 
+## [Unreleased]
+
+### Changed
+- CI: `claude.yml` upgraded to the two-job pattern — automatic Claude review on
+  every PR plus the existing `@claude` interactive agent. Added `auto-merge.yml`
+  to merge same-repo PRs once required checks pass.
+
 ## [1.1.0] — 2026-06-06
 
 ### Added
