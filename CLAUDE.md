@@ -5,9 +5,8 @@ application-security engineer: detection patterns, vulnerability taxonomies,
 threat-modeling discipline, and a specialized auditor agent. Brand:
 blackterminal. Author: Ingus Liepins (black.terminal), GitHub `subkoks`.
 
-It ships as a Claude Code plugin and symlinks into every AI editor on the
-machine (Claude Code, Cursor, Windsurf, Codex) so one `git pull` updates them
-all. Coverage spans OWASP Top 10, OWASP API/LLM Top 10, and CWE Top 25 —
+It ships as a Claude Code plugin and symlinks into Claude Code and Codex
+(Cursor/Windsurf retired 2026-06-17) so one `git pull` updates them all. Coverage spans OWASP Top 10, OWASP API/LLM Top 10, and CWE Top 25 —
 injection, broken access control, crypto failures, SSRF, path traversal,
 insecure deserialization, hardcoded secrets, cloud/container/CI misconfig.
 
