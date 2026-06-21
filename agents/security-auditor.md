@@ -8,7 +8,7 @@ description: >
   references, CWE/OWASP mapping, exploit scenarios, and concrete fixes.
   Skips paraphrase; quotes vulnerable code verbatim and shows patched code.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: claude-sonnet-4-6
 maxTurns: 30
 effort: high
 memory: user
