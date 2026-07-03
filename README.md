@@ -219,6 +219,10 @@ blackterminal-security/
 
 Uses the standard **SKILL.md / agent** package format supported by 30+ AI coding tools.
 
+## Codex CLI
+
+Codex CLI should read the root `AGENTS.md` and use the repo-local `.codex/config.toml` defaults in this workspace.
+
 | Tool | Skills | Subagent | Notes |
 |------|--------|----------|-------|
 | Claude Code | ✅ | ✅ | Full skill + agent support |

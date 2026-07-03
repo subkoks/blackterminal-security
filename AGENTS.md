@@ -1,0 +1,21 @@
+# AGENTS.md
+
+Repo-specific instructions for Codex CLI and other agents working in this repository.
+
+## Scope
+
+- This repo ships security skills, an auditor agent, and install/update scripts.
+- Read `README.md` and `CLAUDE.md` before editing.
+- Keep changes small and security-focused. Prefer updating the canonical skill/agent source over generated outputs.
+
+## Operating rules
+
+- Feature branches only; one logical change per commit.
+- Keep the security auditor read-only by default.
+- Preserve the SSH-only remote policy documented in `CLAUDE.md`.
+- Use repo-local `.codex/config.toml` for Codex workspace defaults.
+
+## Codex CLI notes
+
+- Codex CLI should treat this file as the repo guidance source.
+- If a change affects generated skill or agent artifacts, update the canonical source under `skills/` or `agents/`, not the downstream mirror.
