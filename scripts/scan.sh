@@ -133,14 +133,16 @@ done
 # ─── Injection sinks ────────────────────────────────────────────────
 for f in "${FILES[@]}"; do
   # SQL injection (template-string interpolation into query sinks)
-  if grep -nE '\b(query|execute|raw|\$queryRawUnsafe|sql\.raw|sequelize\.literal)\s*\(\s*[`"'\''][^`"'\'']*\$\{' "$f" >/dev/null 2>&1; then
-    line=$(grep -nE '\b(query|execute|raw|\$queryRawUnsafe|sql\.raw|sequelize\.literal)\s*\(\s*[`"'\''][^`"'\'']*\$\{' "$f" | head -1 | cut -d: -f1)
+  # shellcheck disable=SC2016 # regex intentionally matches a literal `$queryRawUnsafe` token.
+  if grep -nE "\\$\\{" "$f" | grep -E '\b(query|execute|raw|\$queryRawUnsafe|sql\.raw|sequelize\.literal)\s*\(' >/dev/null 2>&1; then
+    # shellcheck disable=SC2016 # regex intentionally matches a literal `$queryRawUnsafe` token.
+    line=$(grep -nE "\\$\\{" "$f" | grep -E '\b(query|execute|raw|\$queryRawUnsafe|sql\.raw|sequelize\.literal)\s*\(' | head -1 | cut -d: -f1)
     flag HIGH "$f:$line — possible SQL injection (template literal in query sink)"
   fi
 
   # Command injection
-  if grep -nE 'child_process\.(exec|execSync)\s*\(\s*[`"'\''][^`"'\'']*\$\{' "$f" >/dev/null 2>&1; then
-    line=$(grep -nE 'child_process\.(exec|execSync)\s*\(\s*[`"'\''][^`"'\'']*\$\{' "$f" | head -1 | cut -d: -f1)
+  if grep -nE "\\$\\{" "$f" | grep -E 'child_process\.(exec|execSync)\s*\(' >/dev/null 2>&1; then
+    line=$(grep -nE "\\$\\{" "$f" | grep -E 'child_process\.(exec|execSync)\s*\(' | head -1 | cut -d: -f1)
     flag HIGH "$f:$line — possible command injection (child_process.exec with template literal)"
   fi
   if grep -nE 'subprocess\.(run|call|Popen).*shell\s*=\s*True' "$f" >/dev/null 2>&1; then
@@ -213,7 +215,7 @@ for f in "${FILES[@]}"; do
 
   # Dockerfile smells
   case "$f" in
-    *Dockerfile*|Dockerfile)
+    *Dockerfile*)
       if grep -nE '^USER\s+root\s*$' "$f" >/dev/null 2>&1; then
         line=$(grep -nE '^USER\s+root\s*$' "$f" | head -1 | cut -d: -f1)
         flag MED "$f:$line — USER root in Dockerfile"
