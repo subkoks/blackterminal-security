@@ -96,7 +96,7 @@ for s in $SKILLS; do
     link "$src" "$WINDSURF_DIR/$s"
   fi
   if [ -d "$HOME/.agents" ]; then
-    say "~/.agents mirror: $s"
+    say "$HOME/.agents mirror: $s"
     link "$src" "$AGENTS_MIRROR/$s"
   fi
 done
