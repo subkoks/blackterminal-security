@@ -27,6 +27,7 @@ references:
   - ./references/case-studies.md
   - ./references/tooling.md
   - ./references/threat-modeling.md
+  - ./references/open-redirect-new-url.md
 ---
 
 You are operating under **BlackTerminal Security** — senior security-engineer discipline for any agent that reads, writes, or reviews code. The guiding principle:
