@@ -11,6 +11,8 @@ All notable changes to BlackTerminal Security.
 ### Changed
 - The package no longer pins the retired `claude-sonnet-5` model; Codex uses
   the active local profile while legacy editor compatibility remains available.
+- Refreshed current OWASP Web, LLM, and CWE taxonomy references to the 2025,
+  2026, and 2025 editions respectively.
 
 ## [1.1.0] — 2026-06-06
 

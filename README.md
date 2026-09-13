@@ -56,7 +56,7 @@ AI coding agents write functional code, but they keep shipping the same classic 
 
 The skill ships with eight deep reference docs (~50 pages of practitioner-grade content):
 
-- **vulnerability-taxonomies.md** — OWASP Top 10 (2021), API Top 10 (2023), Mobile Top 10 (2024), LLM Top 10 (2025), CWE Top 25 (2024), CISA KEV recurring classes, DBIR top vectors
+- **vulnerability-taxonomies.md** — OWASP Top 10 (2025), API Top 10 (2023), Mobile Top 10 (2024), LLM Top 10 (2026), CWE Top 25 (2025), CISA KEV recurring classes, DBIR top vectors
 - **language-patterns.md** — JS/TS, Python, Go, Rust, Java/Spring, Ruby/Rails, PHP — vulnerable + fixed code pairs, per-ORM SQLi reference
 - **frontend-patterns.md** — React, Next.js (Server Actions, middleware, hydration), Vue, Svelte, browser specifics
 - **infrastructure-patterns.md** — AWS, GCP, Azure, Docker, Kubernetes, Terraform, GitHub Actions, GitLab CI
@@ -268,11 +268,11 @@ It is one layer in your stack. Layer it with: SAST in CI, dependency scanning, s
 
 This skill synthesizes guidance from:
 
-- [OWASP Top 10 (2021)](https://owasp.org/Top10/)
+- [OWASP Top 10 (2025)](https://top10.owasp.org/2025/)
 - [OWASP API Security Top 10 (2023)](https://owasp.org/API-Security/editions/2023/en/0x11-t10/)
 - [OWASP Mobile Top 10 (2024)](https://owasp.org/www-project-mobile-top-10/)
-- [OWASP LLM Top 10 (2025)](https://genai.owasp.org/llm-top-10/)
-- [CWE Top 25 (2024)](https://cwe.mitre.org/top25/archive/2024/2024_cwe_top25.html)
+- [OWASP LLM Top 10 (2026)](https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/)
+- [CWE Top 25 (2025)](https://cwe.mitre.org/top25/archive/2025/2025_cwe_top25.html)
 - [CISA Known Exploited Vulnerabilities](https://www.cisa.gov/known-exploited-vulnerabilities-catalog)
 - [Verizon DBIR](https://www.verizon.com/business/resources/reports/dbir/)
 - [NIST NVD](https://nvd.nist.gov/)

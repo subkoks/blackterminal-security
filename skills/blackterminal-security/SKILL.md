@@ -254,7 +254,7 @@ You are a senior reviewer. Senior reviewers don't approve what they don't unders
 
 ## Further Reading (in this skill)
 
-- **[vulnerability-taxonomies.md](./references/vulnerability-taxonomies.md)** — OWASP Top 10 (2021), OWASP API Top 10 (2023), OWASP LLM Top 10 (2025), CWE Top 25 (2024), CISA KEV recurring classes, DBIR top vectors
+- **[vulnerability-taxonomies.md](./references/vulnerability-taxonomies.md)** — OWASP Top 10 (2025), OWASP API Top 10 (2023), OWASP LLM Top 10 (2026), CWE Top 25 (2025), CISA KEV recurring classes, DBIR top vectors
 - **[language-patterns.md](./references/language-patterns.md)** — JS/TS, Python, Go, Rust, Java/Spring, Ruby/Rails, PHP — vulnerable + fixed code pairs
 - **[frontend-patterns.md](./references/frontend-patterns.md)** — React, Next.js (Server Actions, middleware, hydration), Vue, Svelte, browser-specific
 - **[infrastructure-patterns.md](./references/infrastructure-patterns.md)** — AWS, GCP, Azure, Docker, Kubernetes, Terraform, GitHub Actions, GitLab CI
