@@ -4,10 +4,13 @@ All notable changes to BlackTerminal Security.
 
 ## [Unreleased]
 
+### Added
+- Codex-native `security-auditor` definition and installer links for Codex
+  skills and agent discovery.
+
 ### Changed
-- CI: `claude.yml` upgraded to the two-job pattern — automatic Claude review on
-  every PR plus the existing `@claude` interactive agent. Added `auto-merge.yml`
-  to merge same-repo PRs once required checks pass.
+- The package no longer pins the retired `claude-sonnet-5` model; Codex uses
+  the active local profile while legacy editor compatibility remains available.
 
 ## [1.1.0] — 2026-06-06
 

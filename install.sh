@@ -43,9 +43,19 @@ skip() { printf "  ${YEL}skip${NC} %s\n" "$*"; }
 
 SKILLS="blackterminal-security security-audit"
 
-# link <target> <linkpath> — idempotent symlink (replaces existing symlink)
+# link <target> <linkpath> — idempotent symlink; never replaces another owner.
 link() {
   local target="$1" linkpath="$2"
+  local current_target=""
+
+  if [ -L "$linkpath" ]; then
+    current_target="$(readlink "$linkpath")"
+    if [ "$current_target" != "$target" ]; then
+      skip "$linkpath (symlink belongs to $current_target — leaving it)"
+      return
+    fi
+  fi
+
   if [ "$UNINSTALL" -eq 1 ]; then
     if [ -L "$linkpath" ]; then
       [ "$DRY" -eq 1 ] && { echo "  rm   $linkpath"; return; }
@@ -63,7 +73,9 @@ link() {
   ok "$linkpath -> $target"
 }
 
-# --- Cursor (canonical), then Claude skills point at Cursor canonical ---
+# --- Codex-native paths, then compatible legacy editor paths ---
+CODEX_SKILLS="$HOME/.codex/skills"
+CODEX_AGENTS="$HOME/.codex/agents"
 CURSOR_DIR="$HOME/.cursor/skills"
 CLAUDE_SKILLS="$HOME/.claude/skills"
 CLAUDE_AGENTS="$HOME/.claude/agents"
@@ -80,6 +92,10 @@ cursor_present=0
 
 for s in $SKILLS; do
   src="$REPO/skills/$s"
+  if [ -d "$HOME/.codex" ]; then
+    say "Codex (skill): $s"
+    link "$src" "$CODEX_SKILLS/$s"
+  fi
   if [ "$cursor_present" -eq 1 ]; then
     say "Cursor: $s"
     link "$src" "$CURSOR_DIR/$s"
@@ -101,7 +117,12 @@ for s in $SKILLS; do
   fi
 done
 
-# --- Claude agent ---
+# --- Codex and Claude agents ---
+if [ -d "$HOME/.codex" ]; then
+  say "Codex (agent): security-auditor"
+  link "$REPO/.codex/agents/security-auditor.toml" "$CODEX_AGENTS/security-auditor.toml"
+fi
+
 if [ -d "$HOME/.claude" ]; then
   say "Claude (agent): security-auditor"
   link "$REPO/agents/security-auditor.md" "$CLAUDE_AGENTS/security-auditor.md"
@@ -126,6 +147,7 @@ fi
 say "done."
 if [ "$UNINSTALL" -eq 0 ] && [ "$DRY" -eq 0 ]; then
   echo ""
-  echo "Verify in Claude Code:  /security-audit <path>"
+  echo "Verify in Codex:       delegate to security-auditor for <path>"
+  echo "Verify in Claude Code: /security-audit <path>"
   echo "Fast scan:              ./scripts/scan.sh <path>"
 fi

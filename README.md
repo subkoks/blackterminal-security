@@ -13,7 +13,7 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
   <img src="https://img.shields.io/badge/format-SKILL.md-black" alt="SKILL.md format" />
-  <img src="https://img.shields.io/badge/editors-Claude%20%7C%20Cursor%20%7C%20Windsurf%20%7C%20Codex-black" alt="Editors" />
+  <img src="https://img.shields.io/badge/editors-Codex%20%7C%20Claude%20%7C%20Cursor%20%7C%20Windsurf-black" alt="Editors" />
 </p>
 
 ---
@@ -85,13 +85,16 @@ What it wires up (only for editors present on the machine):
 
 | Target | Path |
 |--------|------|
-| Cursor (canonical) | `~/.cursor/skills/blackterminal-security`, `~/.cursor/skills/security-audit` |
+| Codex (canonical) | `~/.codex/skills/*`, `~/.codex/agents/security-auditor.toml` |
+| Cursor | `~/.cursor/skills/blackterminal-security`, `~/.cursor/skills/security-audit` |
 | Claude Code (skills) | `~/.claude/skills/*` → Cursor canonical |
 | Claude Code (agent) | `~/.claude/agents/security-auditor.md` |
 | Windsurf | `~/.codeium/windsurf/skills/*` |
 | `~/.agents` mirror | `~/.agents/skills/*` |
 
-Codex / Copilot consume `SKILL.md` directly — point their instruction file at this repo.
+Codex uses the installer-managed skills and the native read-only auditor. Its
+active profile controls model selection; this repository intentionally does not
+pin a model ID.
 
 ### Manual / project-level
 
@@ -100,6 +103,12 @@ mkdir -p .claude/skills .claude/agents
 cp -r skills/blackterminal-security .claude/skills/
 cp -r skills/security-audit .claude/skills/
 cp agents/security-auditor.md .claude/agents/
+
+# Codex project-local setup
+mkdir -p .agents/skills .codex/agents
+ln -s ../../skills/blackterminal-security .agents/skills/blackterminal-security
+ln -s ../../skills/security-audit .agents/skills/security-audit
+cp .codex/agents/security-auditor.toml .codex/agents/
 ```
 
 ---
@@ -187,6 +196,11 @@ If your agent only writes pure functions and unit tests, you may not need this. 
 blackterminal-security/
 ├── .claude-plugin/
 │   └── plugin.json
+├── .codex/
+│   └── agents/
+│       └── security-auditor.toml
+├── .agents/
+│   └── skills/
 ├── .github/
 │   └── workflows/
 │       └── security-scan.yml
@@ -221,14 +235,16 @@ Uses the standard **SKILL.md / agent** package format supported by 30+ AI coding
 
 ## Codex CLI
 
-Codex CLI should read the root `AGENTS.md` and use the repo-local `.codex/config.toml` defaults in this workspace.
+Codex CLI reads the root `AGENTS.md`, uses the repo-local `.codex/config.toml`
+defaults, discovers skills through `.agents/skills`, and loads the native
+read-only auditor from `.codex/agents/security-auditor.toml`.
 
 | Tool | Skills | Subagent | Notes |
 |------|--------|----------|-------|
 | Claude Code | ✅ | ✅ | Full skill + agent support |
 | Cursor | ✅ | — | `~/.cursor/skills/` |
 | Windsurf | ✅ | — | `~/.codeium/windsurf/skills/` |
-| OpenAI Codex | ✅ | — | Skill format |
+| OpenAI Codex | ✅ | ✅ | Native TOML auditor; active profile selects model |
 | Gemini CLI | ✅ | — | Skill format |
 | Cline / Roo Code | ✅ | — | Skill format |
 | GitHub Copilot | ✅ | — | Via `.github/copilot-instructions.md` reference |
