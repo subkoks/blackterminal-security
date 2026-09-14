@@ -80,7 +80,10 @@ window.location.href = req.query.next;
 
 // FIX
 const next = searchParams.get('next');
-const safe = next?.startsWith('/') && !next.startsWith('//') ? next : '/';
+const isSafeInternalPath = (value) =>
+  typeof value === 'string' &&
+  /^\/(?!\/)[a-z0-9/_-]*(?:\?[^#\\\s]*)?$/i.test(value);
+const safe = isSafeInternalPath(next) ? next : '/';
 router.push(safe);
 ```
 
@@ -90,7 +93,9 @@ router.push(safe);
 - `https://app.example.com.evil.com` (suffix attack on naive prefix matching)
 - Whitespace tricks: `/\t//evil.com`
 
-Use a strict allowlist of internal paths via a regex like `^/[a-z0-9\-/_]+(?:\?[^#]*)?$`.
+Use a strict allowlist of internal paths; reject a second leading slash,
+backslashes, fragments, and whitespace. For dynamic internal routes, resolve
+against a trusted base URL and require an exact origin match before redirecting.
 
 ---
 

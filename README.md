@@ -13,7 +13,7 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
   <img src="https://img.shields.io/badge/format-SKILL.md-black" alt="SKILL.md format" />
-  <img src="https://img.shields.io/badge/editors-Claude%20%7C%20Cursor%20%7C%20Windsurf%20%7C%20Codex-black" alt="Editors" />
+  <img src="https://img.shields.io/badge/editors-Codex%20%7C%20Claude%20%7C%20Cursor%20%7C%20Windsurf-black" alt="Editors" />
 </p>
 
 ---
@@ -56,7 +56,7 @@ AI coding agents write functional code, but they keep shipping the same classic 
 
 The skill ships with eight deep reference docs (~50 pages of practitioner-grade content):
 
-- **vulnerability-taxonomies.md** — OWASP Top 10 (2021), API Top 10 (2023), Mobile Top 10 (2024), LLM Top 10 (2025), CWE Top 25 (2024), CISA KEV recurring classes, DBIR top vectors
+- **vulnerability-taxonomies.md** — OWASP Top 10 (2025), API Top 10 (2023), Mobile Top 10 (2024), LLM Top 10 (2026), CWE Top 25 (2025), CISA KEV recurring classes, DBIR top vectors
 - **language-patterns.md** — JS/TS, Python, Go, Rust, Java/Spring, Ruby/Rails, PHP — vulnerable + fixed code pairs, per-ORM SQLi reference
 - **frontend-patterns.md** — React, Next.js (Server Actions, middleware, hydration), Vue, Svelte, browser specifics
 - **infrastructure-patterns.md** — AWS, GCP, Azure, Docker, Kubernetes, Terraform, GitHub Actions, GitLab CI
@@ -85,13 +85,16 @@ What it wires up (only for editors present on the machine):
 
 | Target | Path |
 |--------|------|
-| Cursor (canonical) | `~/.cursor/skills/blackterminal-security`, `~/.cursor/skills/security-audit` |
+| Codex (canonical) | `~/.codex/skills/*`, `~/.codex/agents/security-auditor.toml` |
+| Cursor | `~/.cursor/skills/blackterminal-security`, `~/.cursor/skills/security-audit` |
 | Claude Code (skills) | `~/.claude/skills/*` → Cursor canonical |
 | Claude Code (agent) | `~/.claude/agents/security-auditor.md` |
 | Windsurf | `~/.codeium/windsurf/skills/*` |
 | `~/.agents` mirror | `~/.agents/skills/*` |
 
-Codex / Copilot consume `SKILL.md` directly — point their instruction file at this repo.
+Codex uses the installer-managed skills and the native read-only auditor. Its
+active profile controls model selection; this repository intentionally does not
+pin a model ID.
 
 ### Manual / project-level
 
@@ -100,6 +103,12 @@ mkdir -p .claude/skills .claude/agents
 cp -r skills/blackterminal-security .claude/skills/
 cp -r skills/security-audit .claude/skills/
 cp agents/security-auditor.md .claude/agents/
+
+# Codex project-local setup
+mkdir -p .agents/skills .codex/agents
+ln -s ../../skills/blackterminal-security .agents/skills/blackterminal-security
+ln -s ../../skills/security-audit .agents/skills/security-audit
+cp .codex/agents/security-auditor.toml .codex/agents/
 ```
 
 ---
@@ -187,6 +196,11 @@ If your agent only writes pure functions and unit tests, you may not need this. 
 blackterminal-security/
 ├── .claude-plugin/
 │   └── plugin.json
+├── .codex/
+│   └── agents/
+│       └── security-auditor.toml
+├── .agents/
+│   └── skills/
 ├── .github/
 │   └── workflows/
 │       └── security-scan.yml
@@ -221,14 +235,16 @@ Uses the standard **SKILL.md / agent** package format supported by 30+ AI coding
 
 ## Codex CLI
 
-Codex CLI should read the root `AGENTS.md` and use the repo-local `.codex/config.toml` defaults in this workspace.
+Codex CLI reads the root `AGENTS.md`, uses the repo-local `.codex/config.toml`
+defaults, discovers skills through `.agents/skills`, and loads the native
+read-only auditor from `.codex/agents/security-auditor.toml`.
 
 | Tool | Skills | Subagent | Notes |
 |------|--------|----------|-------|
 | Claude Code | ✅ | ✅ | Full skill + agent support |
 | Cursor | ✅ | — | `~/.cursor/skills/` |
 | Windsurf | ✅ | — | `~/.codeium/windsurf/skills/` |
-| OpenAI Codex | ✅ | — | Skill format |
+| OpenAI Codex | ✅ | ✅ | Native TOML auditor; active profile selects model |
 | Gemini CLI | ✅ | — | Skill format |
 | Cline / Roo Code | ✅ | — | Skill format |
 | GitHub Copilot | ✅ | — | Via `.github/copilot-instructions.md` reference |
@@ -252,11 +268,11 @@ It is one layer in your stack. Layer it with: SAST in CI, dependency scanning, s
 
 This skill synthesizes guidance from:
 
-- [OWASP Top 10 (2021)](https://owasp.org/Top10/)
+- [OWASP Top 10 (2025)](https://top10.owasp.org/2025/)
 - [OWASP API Security Top 10 (2023)](https://owasp.org/API-Security/editions/2023/en/0x11-t10/)
 - [OWASP Mobile Top 10 (2024)](https://owasp.org/www-project-mobile-top-10/)
-- [OWASP LLM Top 10 (2025)](https://genai.owasp.org/llm-top-10/)
-- [CWE Top 25 (2024)](https://cwe.mitre.org/top25/archive/2024/2024_cwe_top25.html)
+- [OWASP LLM Top 10 (2026)](https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/)
+- [CWE Top 25 (2025)](https://cwe.mitre.org/top25/archive/2025/2025_cwe_top25.html)
 - [CISA Known Exploited Vulnerabilities](https://www.cisa.gov/known-exploited-vulnerabilities-catalog)
 - [Verizon DBIR](https://www.verizon.com/business/resources/reports/dbir/)
 - [NIST NVD](https://nvd.nist.gov/)

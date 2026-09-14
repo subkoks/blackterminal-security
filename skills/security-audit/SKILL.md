@@ -22,6 +22,10 @@ argument-hint: "[file, directory, PR diff, or scope description]"
 
 Audit the code at `$ARGUMENTS` against production-quality security standards.
 
+In Codex, delegate the review to `.codex/agents/security-auditor.toml` when
+subagent review is available. The active Codex profile selects the model; this
+package does not pin a provider-specific model ID.
+
 If no path is provided, audit the most recently changed files:
 !`git diff --name-only HEAD~1 2>/dev/null | head -30`
 

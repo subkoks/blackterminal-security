@@ -11,11 +11,12 @@ Repo-specific instructions for Codex CLI and other agents working in this reposi
 ## Operating rules
 
 - Feature branches only; one logical change per commit.
-- Keep the security auditor read-only by default.
+- Keep both security-auditor definitions read-only by default: the Codex-native
+  `.codex/agents/security-auditor.toml` and the compatible Markdown agent.
 - Preserve the SSH-only remote policy documented in `CLAUDE.md`.
 - Use repo-local `.codex/config.toml` for Codex workspace defaults.
 
 ## Codex CLI notes
 
 - Codex CLI should treat this file as the repo guidance source.
-- If a change affects generated skill or agent artifacts, update the canonical source under `skills/` or `agents/`, not the downstream mirror.
+- If a change affects generated skill or agent artifacts, update the canonical source under `skills/`, `agents/`, or `.codex/agents/`, not a downstream mirror.
