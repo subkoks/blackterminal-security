@@ -1,71 +1,16 @@
-<p align="center">
-  <strong>BlackTerminal Security</strong>
-</p>
+<h1>
+  <picture>
+    <source media="(max-width: 600px)" srcset="assets/readme/hero-mobile.svg">
+    <img src="assets/readme/hero.svg" width="100%" alt="BlackTerminal Security — BLACK.TERMINAL">
+  </picture>
+</h1>
 
-<h3 align="center">Find vulnerabilities. Ship secure.</h3>
+**blackterminal-security** brings security review guidance, a read-only auditor, and an offline scanner to AI coding workflows.
 
-<p align="center">
-  A skill + agent package that gives AI coding agents the instincts of a senior
-  application security engineer.<br/>
-  Stop shipping classic vulnerabilities — start shipping production-secure code.
-</p>
+**[Install](#install)** · [Components](#whats-inside) · [Audit workflow](#how-it-works) · [Coverage](#why-this-exists) · [Limitations](#what-it-is-not)
 
-<p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
-  <img src="https://img.shields.io/badge/format-SKILL.md-black" alt="SKILL.md format" />
-  <img src="https://img.shields.io/badge/editors-Codex%20%7C%20Claude%20%7C%20Cursor%20%7C%20Windsurf-black" alt="Editors" />
-</p>
-
----
-
-## Why this exists
-
-AI coding agents write functional code, but they keep shipping the same classic vulnerabilities — SQL injection, XSS, IDOR, hardcoded secrets, missing auth on Server Actions, public S3 buckets, `pull_request_target` with checkout-of-fork-code. The bugs that have headlined CVEs for fifteen years.
-
-**BlackTerminal Security fixes this.** It's a set of detection patterns, vulnerability taxonomies, threat-modeling discipline, and a specialized auditor agent that teach your AI teammates to **think like a senior security engineer** — find the trust boundary, match input to sink, check auth on every state-changing path, treat every secret as already leaked, fail closed.
-
-### The bugs it catches
-
-- **Injection** — SQLi, NoSQLi, command, code, template, XSS, LDAP, XPath
-- **Broken Access Control** — IDOR, BOLA, BOPLA, missing auth, mass assignment, Server Action authz gaps, `x-middleware-subrequest` bypass class
-- **Cryptographic Failures** — MD5/SHA1, `Math.random()` for tokens, ECB mode, hardcoded keys, JWT `alg: none`, HS256/RS256 confusion, `===` for HMAC compare
-- **SSRF** — including private-IP / cloud-metadata / `file://` / TOCTOU
-- **Path Traversal** — `path.join` without prefix-check, `send_file` with raw input
-- **Insecure Deserialization** — `pickle.loads`, `yaml.load`, `ObjectInputStream`, `vm2`
-- **Hardcoded Secrets** — AWS, GitHub, Stripe, OpenAI, Anthropic, Slack, JWTs, private keys (25+ patterns)
-- **Cloud Misconfig** — public S3, IAM `*:*`, `0.0.0.0/0:22`, IMDSv1, missing encryption
-- **Container / k8s** — `privileged: true`, `runAsUser: 0`, `hostNetwork`, `/var/run/docker.sock` mount, `image:latest`
-- **CI/CD** — `pull_request_target` + checkout-fork-code, mutable Action tags (CVE-2025-30066 class), shell-injection via PR title
-- **Auth flaws** — JWT in localStorage, no MFA, missing rate limit on login, predictable reset tokens
-- **Open Redirect** — `//evil.com` bypass class
-- **Markdown exfil** — image URLs constructed from secrets (EchoLeak class)
-- **LLM-specific** — output-to-eval, excessive agency, secrets in system prompt
-
----
-
-## What's inside
-
-| Component | Type | What it does |
-|-----------|------|-------------|
-| **`blackterminal-security`** | Skill | Core security discipline — auto-loaded when your agent reads, writes, or reviews code. Five Disciplines, threat-model checklist, detection cheat-sheet. |
-| **`security-audit`** | Skill | Slash-command audit. Scans a file/dir/PR/repo for vulnerabilities, returns severity-ranked report with CWE/OWASP mapping. |
-| **`security-auditor`** | Agent | Read-only senior security engineer subagent. Cannot write, edit, or delete. Walks every file with the OWASP Top 10 + CWE Top 25 + threat model. |
-| **`scan.sh`** | Script | Fast offline regex scan for pre-commit / CI. macOS bash 3.2-safe. |
-
-### Reference documentation
-
-The skill ships with eight deep reference docs (~50 pages of practitioner-grade content):
-
-- **vulnerability-taxonomies.md** — OWASP Top 10 (2025), API Top 10 (2023), Mobile Top 10 (2024), LLM Top 10 (2026), CWE Top 25 (2025), CISA KEV recurring classes, DBIR top vectors
-- **language-patterns.md** — JS/TS, Python, Go, Rust, Java/Spring, Ruby/Rails, PHP — vulnerable + fixed code pairs, per-ORM SQLi reference
-- **frontend-patterns.md** — React, Next.js (Server Actions, middleware, hydration), Vue, Svelte, browser specifics
-- **infrastructure-patterns.md** — AWS, GCP, Azure, Docker, Kubernetes, Terraform, GitHub Actions, GitLab CI
-- **secrets-patterns.md** — regex catalog for 25+ secret types
-- **case-studies.md** — Log4Shell, Spring4Shell, MOVEit, XZ backdoor, Polyfill.io, Snowflake, Ivanti, regreSSHion, Next.js CVE-2025-29927, tj-actions supply chain, recent agent CVEs
-- **tooling.md** — Semgrep, CodeQL, Snyk, Trivy, Gitleaks, OSV, govulncheck, Brakeman, Checkov, kube-bench, MobSF
-- **threat-modeling.md** — the full 10-question discipline
-
----
+[![License: MIT](https://img.shields.io/badge/license-MIT-393632?labelColor=1B1A18)](LICENSE)
+[![Format](https://img.shields.io/badge/format-SKILL.md-393632?labelColor=1B1A18)](#compatibility)
 
 ## Install
 
@@ -111,7 +56,27 @@ ln -s ../../skills/security-audit .agents/skills/security-audit
 cp .codex/agents/security-auditor.toml .codex/agents/
 ```
 
----
+## What's inside
+
+| Component | Type | What it does |
+|-----------|------|-------------|
+| **`blackterminal-security`** | Skill | Core security discipline — auto-loaded when your agent reads, writes, or reviews code. Five Disciplines, threat-model checklist, detection cheat-sheet. |
+| **`security-audit`** | Skill | Slash-command audit. Scans a file/dir/PR/repo for vulnerabilities, returns severity-ranked report with CWE/OWASP mapping. |
+| **`security-auditor`** | Agent | Read-only senior security engineer subagent. Cannot write, edit, or delete. Walks every file with the OWASP Top 10 + CWE Top 25 + threat model. |
+| **`scan.sh`** | Script | Fast offline regex scan for pre-commit / CI. macOS bash 3.2-safe. |
+
+### Reference documentation
+
+The skill ships with eight deep reference docs (~50 pages of practitioner-grade content):
+
+- **vulnerability-taxonomies.md** — OWASP Top 10 (2025), API Top 10 (2023), Mobile Top 10 (2024), LLM Top 10 (2026), CWE Top 25 (2025), CISA KEV recurring classes, DBIR top vectors
+- **language-patterns.md** — JS/TS, Python, Go, Rust, Java/Spring, Ruby/Rails, PHP — vulnerable + fixed code pairs, per-ORM SQLi reference
+- **frontend-patterns.md** — React, Next.js (Server Actions, middleware, hydration), Vue, Svelte, browser specifics
+- **infrastructure-patterns.md** — AWS, GCP, Azure, Docker, Kubernetes, Terraform, GitHub Actions, GitLab CI
+- **secrets-patterns.md** — regex catalog for 25+ secret types
+- **case-studies.md** — Log4Shell, Spring4Shell, MOVEit, XZ backdoor, Polyfill.io, Snowflake, Ivanti, regreSSHion, Next.js CVE-2025-29927, tj-actions supply chain, recent agent CVEs
+- **tooling.md** — Semgrep, CodeQL, Snyk, Trivy, Gitleaks, OSV, govulncheck, Brakeman, Checkov, kube-bench, MobSF
+- **threat-modeling.md** — the full 10-question discipline
 
 ## How it works
 
@@ -171,7 +136,28 @@ The `security-auditor` agent walks the target, applies all 20 audit categories, 
 
 Use it as a pre-commit gate (`./install.sh --with-hooks`) or in CI — see `.github/workflows/security-scan.yml`.
 
----
+## Why this exists
+
+AI coding agents write functional code, but they keep shipping the same classic vulnerabilities — SQL injection, XSS, IDOR, hardcoded secrets, missing auth on Server Actions, public S3 buckets, `pull_request_target` with checkout-of-fork-code. The bugs that have headlined CVEs for fifteen years.
+
+**BlackTerminal Security** collects detection patterns, vulnerability taxonomies, threat-modeling discipline, and a specialized auditor agent. The workflow follows trust boundaries, matches input to sinks, checks authorization on state-changing paths, and favors fail-closed behavior.
+
+### The bugs it catches
+
+- **Injection** — SQLi, NoSQLi, command, code, template, XSS, LDAP, XPath
+- **Broken Access Control** — IDOR, BOLA, BOPLA, missing auth, mass assignment, Server Action authz gaps, `x-middleware-subrequest` bypass class
+- **Cryptographic Failures** — MD5/SHA1, `Math.random()` for tokens, ECB mode, hardcoded keys, JWT `alg: none`, HS256/RS256 confusion, `===` for HMAC compare
+- **SSRF** — including private-IP / cloud-metadata / `file://` / TOCTOU
+- **Path Traversal** — `path.join` without prefix-check, `send_file` with raw input
+- **Insecure Deserialization** — `pickle.loads`, `yaml.load`, `ObjectInputStream`, `vm2`
+- **Hardcoded Secrets** — AWS, GitHub, Stripe, OpenAI, Anthropic, Slack, JWTs, private keys (25+ patterns)
+- **Cloud Misconfig** — public S3, IAM `*:*`, `0.0.0.0/0:22`, IMDSv1, missing encryption
+- **Container / k8s** — `privileged: true`, `runAsUser: 0`, `hostNetwork`, `/var/run/docker.sock` mount, `image:latest`
+- **CI/CD** — `pull_request_target` + checkout-fork-code, mutable Action tags (CVE-2025-30066 class), shell-injection via PR title
+- **Auth flaws** — JWT in localStorage, no MFA, missing rate limit on login, predictable reset tokens
+- **Open Redirect** — `//evil.com` bypass class
+- **Markdown exfil** — image URLs constructed from secrets (EchoLeak class)
+- **LLM-specific** — output-to-eval, excessive agency, secrets in system prompt
 
 ## When to use it
 
@@ -188,9 +174,41 @@ Install this if your agent:
 
 If your agent only writes pure functions and unit tests, you may not need this. **Everyone else does.**
 
----
+## Compatibility
+
+Uses the standard **SKILL.md / agent** package format supported by 30+ AI coding tools.
+
+## Codex CLI
+
+Codex CLI reads the root `AGENTS.md`, uses the repo-local `.codex/config.toml`
+defaults, discovers skills through `.agents/skills`, and loads the native
+read-only auditor from `.codex/agents/security-auditor.toml`.
+
+| Tool | Skills | Subagent | Notes |
+|------|--------|----------|-------|
+| Claude Code | ✅ | ✅ | Full skill + agent support |
+| Cursor | ✅ | — | `~/.cursor/skills/` |
+| Windsurf | ✅ | — | `~/.codeium/windsurf/skills/` |
+| OpenAI Codex | ✅ | ✅ | Native TOML auditor; active profile selects model |
+| Gemini CLI | ✅ | — | Skill format |
+| Cline / Roo Code | ✅ | — | Skill format |
+| GitHub Copilot | ✅ | — | Via `.github/copilot-instructions.md` reference |
+| Continue.dev | ✅ | — | Skill format |
+| Goose | ✅ | — | Skill format |
+
+## What it is not
+
+- **Not a SAST tool.** It's a *thinking* skill. Pair it with Semgrep / CodeQL / Snyk / Trivy — the skill knows how to invoke them and synthesize output.
+- **Not a guarantee.** Security is layered. This skill makes your agent better; it doesn't make your code invulnerable.
+- **Not a replacement for human review** on high-stakes flows (payments, auth, crypto, IAM).
+- **Not a runtime defense.** It catches issues at code-time. WAFs, sandboxes, and observability live elsewhere.
+
+It is one layer in your stack. Layer it with: SAST in CI, dependency scanning, secret scanning, container scanning, IaC scanning, DAST, runtime observability, and human security review for high-stakes changes.
 
 ## Project layout
+
+<details>
+<summary>Skills, agents, references, and scripts</summary>
 
 ```
 blackterminal-security/
@@ -227,42 +245,7 @@ blackterminal-security/
 └── install.sh
 ```
 
----
-
-## Compatibility
-
-Uses the standard **SKILL.md / agent** package format supported by 30+ AI coding tools.
-
-## Codex CLI
-
-Codex CLI reads the root `AGENTS.md`, uses the repo-local `.codex/config.toml`
-defaults, discovers skills through `.agents/skills`, and loads the native
-read-only auditor from `.codex/agents/security-auditor.toml`.
-
-| Tool | Skills | Subagent | Notes |
-|------|--------|----------|-------|
-| Claude Code | ✅ | ✅ | Full skill + agent support |
-| Cursor | ✅ | — | `~/.cursor/skills/` |
-| Windsurf | ✅ | — | `~/.codeium/windsurf/skills/` |
-| OpenAI Codex | ✅ | ✅ | Native TOML auditor; active profile selects model |
-| Gemini CLI | ✅ | — | Skill format |
-| Cline / Roo Code | ✅ | — | Skill format |
-| GitHub Copilot | ✅ | — | Via `.github/copilot-instructions.md` reference |
-| Continue.dev | ✅ | — | Skill format |
-| Goose | ✅ | — | Skill format |
-
----
-
-## What it is not
-
-- **Not a SAST tool.** It's a *thinking* skill. Pair it with Semgrep / CodeQL / Snyk / Trivy — the skill knows how to invoke them and synthesize output.
-- **Not a guarantee.** Security is layered. This skill makes your agent better; it doesn't make your code invulnerable.
-- **Not a replacement for human review** on high-stakes flows (payments, auth, crypto, IAM).
-- **Not a runtime defense.** It catches issues at code-time. WAFs, sandboxes, and observability live elsewhere.
-
-It is one layer in your stack. Layer it with: SAST in CI, dependency scanning, secret scanning, container scanning, IaC scanning, DAST, runtime observability, and human security review for high-stakes changes.
-
----
+</details>
 
 ## Authoritative references
 
@@ -281,13 +264,9 @@ This skill synthesizes guidance from:
 - [GitHub Actions Security Hardening](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions)
 - [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/)
 
----
-
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). When adding a new pattern: include a real-world citation (CVE, writeup, or CVSS score). When adding a new case study: name the vendor, date, vector, and remediation.
-
----
 
 ## License
 
@@ -295,4 +274,4 @@ MIT. See [LICENSE](LICENSE).
 
 ---
 
-*BlackTerminal Security. Find vulnerabilities. Ship secure.*
+<img src="assets/readme/dot.svg" width="12" height="12" alt=""> **BLACK.TERMINAL** · [MIT License](LICENSE) · [GitHub](https://github.com/subkoks)
