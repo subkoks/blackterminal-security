@@ -210,9 +210,15 @@ class ScriptSafetyTests(unittest.TestCase):
         self.run_command("bash", "install.sh", "--with-hooks")
         self.assertEqual(hook.read_bytes(), (SOURCE / "hooks/pre-commit").read_bytes())
         self.assertTrue(os.access(hook, os.X_OK))
-        hook.chmod(0o640)
         before = hook.stat()
         self.run_command("bash", "install.sh", "--with-hooks")
+        self.assertEqual(before, hook.stat())
+
+        hook.chmod(0o640)
+        before = hook.stat()
+        for flags in ((), ("--dry-run",)):
+            result = self.run_command("bash", "install.sh", "--with-hooks", *flags, expected=1)
+            self.assertIn("is not executable", result.stderr)
         after = hook.stat()
         self.assertEqual((before.st_mode, before.st_mtime_ns, before.st_ino),
                          (after.st_mode, after.st_mtime_ns, after.st_ino))

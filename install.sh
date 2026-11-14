@@ -135,7 +135,11 @@ if [ "$WITH_HOOKS" -eq 1 ] && [ "$UNINSTALL" -eq 0 ]; then
     hook="$REPO/.git/hooks/pre-commit"
     if [ -L "$hook" ] || [ -e "$hook" ]; then
       if [ ! -L "$hook" ] && [ -f "$hook" ] && cmp -s "$REPO/hooks/pre-commit" "$hook"; then
-        skip ".git/hooks/pre-commit (identical hook already exists)"
+        if [ ! -x "$hook" ]; then
+          echo "error: identical pre-commit hook is not executable; review its permissions: $hook" >&2
+          exit 1
+        fi
+        skip ".git/hooks/pre-commit (identical executable hook already exists)"
       else
         echo "error: existing pre-commit hook preserved: $hook" >&2
         exit 1
