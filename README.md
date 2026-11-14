@@ -26,6 +26,10 @@ cd blackterminal-security
 ./install.sh --uninstall  # remove all symlinks
 ```
 
+Hook installation preserves an identical existing hook and refuses to replace
+any different hook, symbolic link, or directory at `.git/hooks/pre-commit`.
+Run the focused script regression checks with `python3 tests/test_script_safety.py`.
+
 What it wires up (only for editors present on the machine):
 
 | Target | Path |
@@ -131,8 +135,11 @@ The `security-auditor` agent walks the target, applies all 20 audit categories, 
 ### Fast offline scan
 
 ```bash
-./scripts/scan.sh ./src        # exit 0 clean, 1 findings, 2 usage
+./scripts/scan.sh ./src        # exit 0 clean, 1 findings, 2 usage/discovery error
 ```
+
+A failed directory traversal stops the scan with exit code 2, including when
+only part of the file list was collected.
 
 Use it as a pre-commit gate (`./install.sh --with-hooks`) or in CI — see `.github/workflows/security-scan.yml`.
 
