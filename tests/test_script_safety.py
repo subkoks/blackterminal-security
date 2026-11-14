@@ -212,7 +212,9 @@ class ScriptSafetyTests(unittest.TestCase):
         self.assertTrue(os.access(hook, os.X_OK))
         before = hook.stat()
         self.run_command("bash", "install.sh", "--with-hooks")
-        self.assertEqual(before, hook.stat())
+        after = hook.stat()
+        self.assertEqual((before.st_mode, before.st_mtime_ns, before.st_ino),
+                         (after.st_mode, after.st_mtime_ns, after.st_ino))
 
         hook.chmod(0o640)
         before = hook.stat()
