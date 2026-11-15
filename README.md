@@ -28,6 +28,7 @@ cd blackterminal-security
 
 Hook installation preserves an identical existing hook and refuses to replace
 any different hook, symbolic link, or directory at `.git/hooks/pre-commit`.
+The hook scans the exact staged blobs, including during partial staging.
 Run the focused script regression checks with `python3 tests/test_script_safety.py`.
 
 What it wires up (only for editors present on the machine):

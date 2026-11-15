@@ -99,23 +99,52 @@ class ScriptSafetyTests(unittest.TestCase):
         scanner = self.repo / "scripts/scan.sh"
         scanner.parent.mkdir()
         scanner.write_text('#!/usr/bin/env bash\n'
-                           'printf "%s\\0" "$1" >> "$SCAN_LOG"\n'
+                           'cat "$1" >> "$SCAN_LOG"\n'
+                           'printf "\\0" >> "$SCAN_LOG"\n'
                            '[ "${SCAN_FAIL:-0}" = 0 ]\n')
         scanner.chmod(0o755)
-        for name in NAMES:
-            (self.repo / name).write_text("# harmless fixture\n")
+        expected_contents = set()
+        for index, name in enumerate(NAMES):
+            content = f"# harmless fixture {index}\n"
+            expected_contents.add(os.fsencode(content))
+            (self.repo / name).write_text(content)
             self.run_command("git", "add", "--", name)
         log = self.root / "scan-log"
         self.environment["SCAN_LOG"] = str(log)
-        expected_paths = {os.fsencode(self.repo / name) for name in NAMES}
         for fail in ("0", "1"):
             with self.subTest(failure=fail):
                 log.write_bytes(b"")
                 self.environment["SCAN_FAIL"] = fail
                 self.run_command("bash", str(hook), expected=int(fail))
-                paths = log.read_bytes().split(b"\0")[:-1]
-                self.assertEqual(set(paths), expected_paths)
-                self.assertEqual(len(paths), len(NAMES))
+                contents = log.read_bytes().split(b"\0")[:-1]
+                self.assertEqual(set(contents), expected_contents)
+                self.assertEqual(len(contents), len(NAMES))
+
+    def test_hook_scans_staged_content_during_partial_staging(self):
+        hook = self.copy_script("hooks/pre-commit")
+        scanner = self.repo / "scripts/scan.sh"
+        scanner.parent.mkdir()
+        scanner.write_text('#!/usr/bin/env bash\n'
+                           'if grep -q "STAGED_FINDING" "$1"; then\n'
+                           '  echo "synthetic staged finding"\n'
+                           '  exit 1\n'
+                           'fi\n')
+        scanner.chmod(0o755)
+        staged = self.repo / "partial.py"
+
+        # A clean staged blob must pass even if the working tree is unsafe.
+        staged.write_text("safe staged content\n")
+        self.run_command("git", "add", "--", "partial.py")
+        staged.write_text("working tree contains STAGED_FINDING\n")
+        self.run_command("bash", str(hook))
+
+        # An unsafe staged blob must fail even if the working tree is clean.
+        staged.write_text("staged content contains STAGED_FINDING\n")
+        self.run_command("git", "add", "--", "partial.py")
+        staged.write_text("safe working tree content\n")
+        result = self.run_command("bash", str(hook), expected=1)
+        self.assertIn("synthetic staged finding", result.stdout)
+        self.assertEqual(list(self.root.glob("blackterminal-content.*")), [])
 
     def test_hook_checks_git_status_before_consuming_output(self):
         hook = self.copy_script("hooks/pre-commit")
@@ -180,16 +209,25 @@ class ScriptSafetyTests(unittest.TestCase):
                                            stderr=subprocess.PIPE, text=True)
                 try:
                     deadline = time.monotonic() + 5
-                    while not ready.exists() and process.poll() is None and time.monotonic() < deadline:
+                    while (
+                            (not ready.exists()
+                             or not any(self.root.glob("blackterminal-content.*")))
+                            and process.poll() is None
+                            and time.monotonic() < deadline):
                         time.sleep(0.01)
                     self.assertTrue(ready.exists(), "Discovery stub did not become ready")
                     self.assertEqual(len(list(self.root.glob(prefix + "*"))), 1)
+                    if script == hook:
+                        self.assertEqual(
+                            len(list(self.root.glob("blackterminal-content.*"))), 1)
                     process.send_signal(signal.SIGTERM)
                     # Bash may defer signal handling until its foreground child
                     # exits. Release that child so the shell can finish cleanup.
                     stdout, stderr = process.communicate(input="release\n", timeout=5)
                     self.assertNotEqual(process.returncode, 0, stdout + stderr)
                     self.assertEqual(list(self.root.glob(prefix + "*")), [])
+                    self.assertEqual(
+                        list(self.root.glob("blackterminal-content.*")), [])
                     print(f"SIGTERM {script.relative_to(self.repo)}: "
                           f"exit={process.returncode}, temporary list removed")
                 finally:
