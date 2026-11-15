@@ -132,11 +132,24 @@ fi
 if [ "$WITH_HOOKS" -eq 1 ] && [ "$UNINSTALL" -eq 0 ]; then
   say "pre-commit hook (this repo)"
   if [ -d "$REPO/.git" ]; then
-    if [ "$DRY" -eq 1 ]; then
+    hook="$REPO/.git/hooks/pre-commit"
+    if [ -L "$hook" ] || [ -e "$hook" ]; then
+      if [ ! -L "$hook" ] && [ -f "$hook" ] && cmp -s "$REPO/hooks/pre-commit" "$hook"; then
+        if [ ! -x "$hook" ]; then
+          echo "error: identical pre-commit hook is not executable; review its permissions: $hook" >&2
+          exit 1
+        fi
+        skip ".git/hooks/pre-commit (identical executable hook already exists)"
+      else
+        echo "error: existing pre-commit hook preserved: $hook" >&2
+        exit 1
+      fi
+    elif [ "$DRY" -eq 1 ]; then
       ok ".git/hooks/pre-commit"
     else
-      cp "$REPO/hooks/pre-commit" "$REPO/.git/hooks/pre-commit"
-      chmod +x "$REPO/.git/hooks/pre-commit"
+      # Refuse a destination created after the existence check as well.
+      (set -o noclobber; cat "$REPO/hooks/pre-commit" > "$hook")
+      chmod +x "$hook"
       ok ".git/hooks/pre-commit"
     fi
   else

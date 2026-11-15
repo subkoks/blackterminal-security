@@ -11,19 +11,26 @@ SCAN="$REPO/scripts/scan.sh"
 [ -x "$SCAN" ] || { echo "pre-commit: $SCAN not found/executable — skipping"; exit 0; }
 
 # Staged, added/copied/modified files only.
-STAGED=$(git diff --cached --name-only --diff-filter=ACM)
-[ -z "$STAGED" ] && exit 0
+# Check Git's status before consuming any output, including partial output.
+STAGED_FILE=$(mktemp "${TMPDIR:-/tmp}/blackterminal-staged.XXXXXX")
+STAGED_CONTENT=$(mktemp "${TMPDIR:-/tmp}/blackterminal-content.XXXXXX")
+trap 'rm -f -- "$STAGED_FILE" "$STAGED_CONTENT"' EXIT
+if ! git diff --cached --name-only --diff-filter=ACM -z > "$STAGED_FILE"; then
+  echo "pre-commit: unable to list staged files — blocking commit" >&2
+  exit 1
+fi
 
 rc=0
-while IFS= read -r f; do
-  [ -z "$f" ] && continue
-  [ -f "$REPO/$f" ] || continue
-  if ! "$SCAN" "$REPO/$f"; then
+while IFS= read -r -d '' f; do
+  if ! git cat-file blob ":$f" > "$STAGED_CONTENT"; then
+    echo "pre-commit: unable to read staged content for $f — blocking commit" >&2
+    rc=1
+    continue
+  fi
+  if ! "$SCAN" "$STAGED_CONTENT"; then
     rc=1
   fi
-done <<EOF
-$STAGED
-EOF
+done < "$STAGED_FILE"
 
 if [ "$rc" -ne 0 ]; then
   echo ""

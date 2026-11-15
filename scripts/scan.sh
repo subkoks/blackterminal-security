@@ -12,7 +12,7 @@
 # Exit codes:
 #   0 — clean
 #   1 — findings detected
-#   2 — usage error
+#   2 — usage or file-discovery error
 
 set -euo pipefail
 
@@ -73,11 +73,18 @@ FIND_EXPR=(
 if [ -f "$TARGET" ]; then
   FILES=("$TARGET")
 else
+  # Verify discovery before consuming even a partial list of paths.
+  FILE_LIST=$(mktemp "${TMPDIR:-/tmp}/blackterminal-scan.XXXXXX")
+  trap 'rm -f -- "$FILE_LIST"' EXIT
+  if ! find "${FIND_EXPR[@]}" -print0 > "$FILE_LIST"; then
+    echo "error: file discovery failed; scan incomplete" >&2
+    exit 2
+  fi
   # Bash 3.2-compatible (macOS default) — avoid `mapfile`
   FILES=()
-  while IFS= read -r _line; do
+  while IFS= read -r -d '' _line; do
     FILES+=("$_line")
-  done < <(find "${FIND_EXPR[@]}" 2>/dev/null)
+  done < "$FILE_LIST"
   # Exclude this scanner's own source: scan.sh contains the very patterns it
   # greps for, so scanning itself yields false positives. Match by resolved
   # path so only the running script is skipped — every other file (in this or
